@@ -1,10 +1,10 @@
 [project]
 name = "spectr"
-version = "0.3.0"
+version = "0.4a"
 description = "A TUI for browsing Analyzer4D data stream files"
 readme = "README.md"
 authors = [
-    { name = "Ossmos", email = "flashthemusic@gmx.de" }
+    { name = "Ossmos" }
 ]
 requires-python = ">=3.11"
 dependencies = [
@@ -18,6 +18,9 @@ dependencies = [
     "toml>=0.10.2",
     "typer>=0.21.1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/ossmos/spectr"
 
 [project.scripts]
 spectr = "spectr.main:app"
