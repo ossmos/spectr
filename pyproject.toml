@@ -1,6 +1,6 @@
 [project]
 name = "spectr"
-version = "0.4a"
+version = "0.4a1"
 description = "A TUI for browsing Analyzer4D data stream files"
 readme = "README.md"
 authors = [
