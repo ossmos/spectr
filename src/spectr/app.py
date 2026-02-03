@@ -1,3 +1,4 @@
+import asyncio
 import shutil
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -277,24 +278,17 @@ class Spectr(App):
             return []
         return bms
 
-    def on_data_table_row_highlighted(self, event: FileTable.RowHighlighted):
-        table = self.query_one(FileTable)
-        table.border_title = f"{event.cursor_row + 1}/{table.row_count}"
-
-    @work
+    @work(exclusive=True)
     async def load_files(self) -> None:
         table = self.query_one(FileTable)
-        table.loading = True
         table.clear()
+        table.loading = True
+        await asyncio.sleep(0.1)
         bms = self.get_filtered_metadata()
         self.notify(f"Found {len(bms)} results")
-        for bm in bms:
-            table.add_row(
-                # TODO: I do not like this very much...
-                *(getattr(bm, col) for col in self.config.table.columns),
-                key=str(bm.id),
-            )
         table.loading = False
+        self._unloaded_table_rows = len(bms)
+        table.create_rows(bms, self.config.table.columns)
 
     async def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         bm = self.cache.get_matching_metadata(

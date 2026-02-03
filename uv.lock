@@ -1170,7 +1170,7 @@ wheels = [
 
 [[package]]
 name = "spectr"
-version = "0.3.0"
+version = "0.4"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
