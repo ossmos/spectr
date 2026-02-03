@@ -59,6 +59,7 @@ Spectr uses a TOML configuration file located at `~/.config/spectr/config.toml`.
 ```toml
 [table]
 columns = ["process", "compression_time", "compression_frq", "avg_time", "avg_frq"]
+build_batch_size = 1000
 
 [table.sort]
 attribute = "process"
