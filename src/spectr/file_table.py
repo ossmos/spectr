@@ -45,7 +45,6 @@ class FileTable(DataTable):
     ) -> None:
         self.clear()
         await asyncio.sleep(0.1)
-        self.notify(f"Found {len(bms)} results")
         self._unloaded_table_rows = len(bms)
         for i, bm in enumerate(bms):
             self.add_row(
