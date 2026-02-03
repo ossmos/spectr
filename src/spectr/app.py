@@ -288,7 +288,9 @@ class Spectr(App):
         self.notify(f"Found {len(bms)} results")
         table.loading = False
         self._unloaded_table_rows = len(bms)
-        table.create_rows(bms, self.config.table.columns)
+        table.create_rows(
+            bms, self.config.table.columns, batch_size=self.config.table.build_batch_size
+        )
 
     async def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         bm = self.cache.get_matching_metadata(

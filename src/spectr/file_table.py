@@ -38,7 +38,10 @@ class FileTable(DataTable):
 
     @work(exclusive=True)
     async def create_rows(
-        self, bms: list[BufferMetadata], columns: list[BufferMetadataProperty]
+        self,
+        bms: list[BufferMetadata],
+        columns: list[BufferMetadataProperty],
+        batch_size: int,
     ) -> None:
         self.clear()
         await asyncio.sleep(0.1)
@@ -50,7 +53,7 @@ class FileTable(DataTable):
                 *(getattr(bm, col) for col in columns),
                 key=str(bm.id),
             )
-            if i % 1000 == 0:
+            if i % batch_size == 0:
                 await asyncio.sleep(0.1)
                 self._unloaded_table_rows = len(bms) - i
                 self.update_border_title()
