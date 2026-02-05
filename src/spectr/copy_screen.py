@@ -106,7 +106,6 @@ class CopySummary(Widget):
         table = self.query_one(FileTable)
         table.add_columns("file")
         table.border_title = "Conflicting Files"
-        table.border_subtitle = "Foo"
 
     @work(exclusive=True)
     async def update_table(self):
@@ -184,7 +183,7 @@ class CopyTargetScreen(ModalScreen[CopyTask]):
         super().__init__(name, id, classes)
         self.files = list(files)
         self.filenames = {f.name for f in self.files}
-        self._cum_file_size = sum(f.stat().st_size for f in self.files)
+        self._cum_file_size = sum(f.stat().st_size for f in self.files if f.exists())
         self._target_folder = None
 
     def compose(self) -> ComposeResult:

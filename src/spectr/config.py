@@ -1,7 +1,7 @@
 import typing
 from typing import Literal, Self
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, PositiveInt, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .types import BufferMetadataProperty, DownsamplingAlgorithm, PlotextPlotMarker
@@ -28,6 +28,7 @@ class TableConfig(BaseModel):
         "avg_frq",
     ]
     sort: SortingConfig = SortingConfig()
+    build_batch_size: PositiveInt = 1000
 
 
 class PlotConfig(BaseModel):

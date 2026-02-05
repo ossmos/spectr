@@ -1,3 +1,4 @@
+import asyncio
 import shutil
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -158,7 +159,7 @@ class Spectr(App):
 
         self.push_screen(QueryScreen(self.user_filter, classes="modal-screen"), callback)  # type: ignore
 
-    def action_copy_selection(self) -> None:
+    async def action_copy_selection(self) -> None:
         bms = self.get_filtered_metadata()
         files = [Path(bm.filepath) for bm in bms]
 
@@ -173,7 +174,6 @@ class Spectr(App):
                     self.notify("Aborted Copy Operation")
                 return
             self.copy_worker = self.copy_files(files, target_folder, resolution_strategy)
-            # TODO: display indicator somewhere and somehow
 
         self.push_screen(CopyTargetScreen(files=files), callback)  # type: ignore
 
@@ -232,7 +232,10 @@ class Spectr(App):
                                 )
                                 raise Exception
                             target_file.unlink()
-                shutil.copyfile(file, target_file)
+                try:
+                    shutil.copyfile(file, target_file)
+                except FileNotFoundError:
+                    self.notify(f"Skipping file: {file} - Not found", severity="warning")
                 if worker.is_cancelled:
                     return (i + 1, target_path)
                 self.call_from_thread(
@@ -277,24 +280,19 @@ class Spectr(App):
             return []
         return bms
 
-    def on_data_table_row_highlighted(self, event: FileTable.RowHighlighted):
-        table = self.query_one(FileTable)
-        table.border_title = f"{event.cursor_row + 1}/{table.row_count}"
-
-    @work
+    @work(exclusive=True)
     async def load_files(self) -> None:
         table = self.query_one(FileTable)
-        table.loading = True
         table.clear()
+        table.loading = True
+        await asyncio.sleep(0.1)
         bms = self.get_filtered_metadata()
         self.notify(f"Found {len(bms)} results")
-        for bm in bms:
-            table.add_row(
-                # TODO: I do not like this very much...
-                *(getattr(bm, col) for col in self.config.table.columns),
-                key=str(bm.id),
-            )
         table.loading = False
+        self._unloaded_table_rows = len(bms)
+        table.create_rows(
+            bms, self.config.table.columns, batch_size=self.config.table.build_batch_size
+        )
 
     async def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         bm = self.cache.get_matching_metadata(
