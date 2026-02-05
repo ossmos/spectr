@@ -159,7 +159,7 @@ class Spectr(App):
 
         self.push_screen(QueryScreen(self.user_filter, classes="modal-screen"), callback)  # type: ignore
 
-    def action_copy_selection(self) -> None:
+    async def action_copy_selection(self) -> None:
         bms = self.get_filtered_metadata()
         files = [Path(bm.filepath) for bm in bms]
 
@@ -174,7 +174,6 @@ class Spectr(App):
                     self.notify("Aborted Copy Operation")
                 return
             self.copy_worker = self.copy_files(files, target_folder, resolution_strategy)
-            # TODO: display indicator somewhere and somehow
 
         self.push_screen(CopyTargetScreen(files=files), callback)  # type: ignore
 
@@ -233,7 +232,10 @@ class Spectr(App):
                                 )
                                 raise Exception
                             target_file.unlink()
-                shutil.copyfile(file, target_file)
+                try:
+                    shutil.copyfile(file, target_file)
+                except FileNotFoundError:
+                    self.notify(f"Skipping file: {file} - Not found", severity="warning")
                 if worker.is_cancelled:
                     return (i + 1, target_path)
                 self.call_from_thread(
