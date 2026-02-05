@@ -106,7 +106,6 @@ class CopySummary(Widget):
         table = self.query_one(FileTable)
         table.add_columns("file")
         table.border_title = "Conflicting Files"
-        table.border_subtitle = "Foo"
 
     @work(exclusive=True)
     async def update_table(self):
