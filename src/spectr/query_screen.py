@@ -4,7 +4,7 @@ from textual.screen import ModalScreen
 from textual.widgets import Input, Label
 
 
-class QueryScreen(ModalScreen[str]):
+class QueryScreen(ModalScreen[str | None]):
     BINDINGS = []
 
     CSS_PATH = "query_screen.tcss"
@@ -39,5 +39,4 @@ class QueryScreen(ModalScreen[str]):
         input_item.value = ""
 
     def key_escape(self):
-        input_item = self.query_one(Input)
-        self.dismiss(input_item.value)
+        self.dismiss(None)

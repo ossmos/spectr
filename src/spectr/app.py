@@ -154,7 +154,9 @@ class Spectr(App):
     def action_open_query(self) -> None:
         """Open the query modal screen to update the user filter"""
 
-        def callback(user_filter: str) -> None:
+        def callback(user_filter: str | None) -> None:
+            if user_filter is None:
+                return
             self.user_filter = user_filter
 
         self.push_screen(QueryScreen(self.user_filter, classes="modal-screen"), callback)  # type: ignore
