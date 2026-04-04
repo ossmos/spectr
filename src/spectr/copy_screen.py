@@ -13,7 +13,8 @@ from textual.screen import ModalScreen
 from textual.widget import Widget
 from textual.widgets import Button, DirectoryTree, Footer, Header, Label, Static
 
-from spectr.file_table import FileTable
+from .file_table import FileTable
+from .utils import bytes_to_human_readable
 
 
 class CopyConflictResolution(Enum):
@@ -81,9 +82,10 @@ class CopySummary(Widget):
             return
 
         target_folder.update(f"Target: [b]{new_preview.target_folder}[/b]")
+        total_size, unit = bytes_to_human_readable(new_preview.total_size)
         file_count.update(
             f"Files to copy: [b]{len(new_preview.files_to_copy)}[/b] "
-            f"({round(new_preview.total_size / 1024**2, 3)} MB)"
+            f"({round(total_size, 3)} {unit})"
         )
         if new_preview.target_is_empty:
             target_status.update("[dim]Target folder: Empty[/dim]")
