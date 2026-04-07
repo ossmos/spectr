@@ -1,4 +1,15 @@
+from enum import StrEnum
 from typing import Literal
+
+
+class FileSizeUnit(StrEnum):
+    BYTE = "B"
+    KILO_BYTE = "KB"
+    MEGA_BYTE = "MB"
+    GIGA_BYTE = "GB"
+    TERA_BYTE = "TB"
+    PETA_BYTE = "PB"
+
 
 BufferMetadataProperty = Literal[
     "id",
