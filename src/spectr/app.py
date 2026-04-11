@@ -177,7 +177,7 @@ class Spectr(App):
                 return
             self.copy_worker = self.copy_files(files, target_folder, resolution_strategy)
 
-        self.push_screen(CopyTargetScreen(files=files), callback)  # type: ignore
+        self.push_screen(CopyTargetScreen(config=self.config, files=files), callback)  # type: ignore
 
     def action_cancel_copy(self):
         if self.copy_worker is None:
