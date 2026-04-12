@@ -2,13 +2,22 @@ from enum import StrEnum
 from typing import Literal
 
 
-class FileSizeUnit(StrEnum):
+class DecimalFileSize(StrEnum):
     BYTE = "B"
     KILO_BYTE = "KB"
     MEGA_BYTE = "MB"
     GIGA_BYTE = "GB"
     TERA_BYTE = "TB"
     PETA_BYTE = "PB"
+
+
+class BinaryFileSize(StrEnum):
+    BYTE = "B"
+    KIBI_BYTE = "K"
+    MEBI_BYTE = "M"
+    GIBI_BYTE = "G"
+    TEBI_BYTE = "T"
+    PEBI_BYTE = "P"
 
 
 BufferMetadataProperty = Literal[
@@ -54,3 +63,4 @@ BufferMetadataProperty = Literal[
 
 PlotextPlotMarker = Literal["braille", "fhd", "hd", "dot"]
 DownsamplingAlgorithm = Literal["lttb", "max_bucket"]
+FileSizeUnit = Literal["decimal", "binary"]

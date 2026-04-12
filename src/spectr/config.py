@@ -4,7 +4,12 @@ from typing import Literal, Self
 from pydantic import BaseModel, PositiveInt, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from .types import BufferMetadataProperty, DownsamplingAlgorithm, PlotextPlotMarker
+from .types import (
+    BufferMetadataProperty,
+    DownsamplingAlgorithm,
+    FileSizeUnit,
+    PlotextPlotMarker,
+)
 
 default_stat_attributes = list(
     filter(
@@ -46,6 +51,10 @@ class MetadataCacheConfig(BaseModel):
     persist_cache: bool = False  # Will create a `.metadata.db` file
 
 
+class DisplayConfig(BaseModel):
+    filesize_unit: FileSizeUnit = "binary"
+
+
 class Config(BaseSettings):
     model_config = SettingsConfigDict(case_sensitive=True)
 
@@ -53,6 +62,7 @@ class Config(BaseSettings):
     plot: PlotConfig = PlotConfig()
     stats: StatConfig = StatConfig()
     metadata_cache: MetadataCacheConfig = MetadataCacheConfig()
+    display: DisplayConfig = DisplayConfig()
 
     @model_validator(mode="after")
     def validate_sort_config(self) -> Self:

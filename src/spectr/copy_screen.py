@@ -13,8 +13,10 @@ from textual.screen import ModalScreen
 from textual.widget import Widget
 from textual.widgets import Button, DirectoryTree, Footer, Header, Label, Static
 
+from spectr.config import Config
+
 from .file_table import FileTable
-from .utils import bytes_to_human_readable
+from .utils import bytes_to_human_readable_binary, bytes_to_human_readable_decimal
 
 
 class CopyConflictResolution(Enum):
@@ -61,6 +63,10 @@ class FilteredDirectoryTree(DirectoryTree):
 class CopySummary(Widget):
     preview: reactive[CopyPreview | None] = reactive(None)
 
+    def __init__(self, config: Config, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.config = config
+
     def compose(self) -> ComposeResult:
         with Vertical(classes="panel", id="summary-container"):
             yield Static("No folder selected", id="target-folder")
@@ -82,7 +88,16 @@ class CopySummary(Widget):
             return
 
         target_folder.update(f"Target: [b]{new_preview.target_folder}[/b]")
-        total_size, unit = bytes_to_human_readable(new_preview.total_size)
+        match self.config.display.filesize_unit:
+            case "decimal":
+                total_size, unit = bytes_to_human_readable_decimal(new_preview.total_size)
+            case "binary":
+                total_size, unit = bytes_to_human_readable_binary(new_preview.total_size)
+            case _:
+                raise LookupError(
+                    "Invalid config entry for display.filesize_unit: "
+                    f"{self.config.display.filesize_unit}"
+                )
         file_count.update(
             f"Files to copy: [b]{len(new_preview.files_to_copy)}[/b] "
             f"({round(total_size, 3)} {unit})"
@@ -177,22 +192,25 @@ class CopyTargetScreen(ModalScreen[CopyTask]):
 
     def __init__(
         self,
+        config: Config,
         files: list[Path],
         name: str | None = None,
         id: str | None = None,  # noqa: A002
         classes: str | None = None,
     ) -> None:
         super().__init__(name, id, classes)
+        self.config = config
         self.files = list(files)
         self.filenames = {f.name for f in self.files}
         self._cum_file_size = sum(f.stat().st_size for f in self.files if f.exists())
         self._target_folder = None
+        self.notify(self.config.display.filesize_unit)
 
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(
             FilteredDirectoryTree("/", id="directory-tree", classes="panel"),
-            CopySummary(),
+            CopySummary(self.config),
             id="horizontal",
         )
         yield Footer()
