@@ -85,6 +85,9 @@ attributes = [
 [metadata_cache]
 sync_recursive = true   # currently unused
 persist_cache = false
+
+[display]
+filesize_unit = "binary"    # options: "binary", "decimal"
 ```
 
 All `table.columns` and `stats.attributes` values correspond to attributes from the `qass.tools.analyzer.buffer_metadata.BufferMetadata` object.
