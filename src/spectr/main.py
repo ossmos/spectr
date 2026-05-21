@@ -70,8 +70,7 @@ def main(
         case "linux":
             config_base_path = Path.home() / ".config"
         case "win32":
-            config_base_path = os.getenv("LOCALAPPDATA")
-            err_console.print("Unable to retrieve config base path for windows")
+            config_base_path = Path(os.getenv("LOCALAPPDATA", Path.home() / ".config"))
         case "darwin":
             config_base_path = Path.home() / ".config"
         case _:
